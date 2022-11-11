@@ -10,10 +10,12 @@ app.use(bodyparser.json({ limit: "50mb" }));
 app.use(bodyparser.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://127.0.0.1:27017/exchangedatabase");
+const url = "mongodb+srv://exchangecurrency:n4WBoKol3DsdBLWL@cluster0.1oeacej.mongodb.net/exchangedatabase?retryWrites=true&w=majority";
+mongoose.connect(url);
 var db = mongoose.connection;
 db.on("error", (err) => { console.log(err); });
 db.on("open", () => { console.log("connection success"); });
+
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -32,28 +34,28 @@ app.get("/", (req, res) => {
 app.get("/sync", (req, res) => {
     const config = {
         headers: {
-            apikey: '1dch2yJkmkI1IfnirKloOPSyQv2c8FNe'
+            apikey: 'kG4e8ZwYhHdw63PW7FDpB9hiaLXRkH7o'
         }
     };
-    Currency.deleteMany({}, ()=>{
-    let currencies = "EUR,INR,CAD,GBP,JPY";
-    axios.get('https://api.apilayer.com/currency_data/live?source=USD&currencies=' + currencies, config)
-        .then(response => {
-            let quotes = response.data.quotes;
-            let array = currencies.split(",");
-            console.log(array);
-            array.forEach((c)=>{
-                let currency = new Currency({
-                    currency:c,
-                    price:quotes['USD' + c]
+    Currency.deleteMany({}, () => {
+        let currencies = "EUR,INR,CAD,GBP,JPY";
+        axios.get('https://api.apilayer.com/currency_data/live?source=USD&currencies=' + currencies, config)
+            .then(response => {
+                let quotes = response.data.quotes;
+                let array = currencies.split(",");
+                console.log(array);
+                array.forEach((c) => {
+                    let currency = new Currency({
+                        currency: c,
+                        price: quotes['USD' + c]
+                    });
+                    currency.save();
                 });
-                currency.save();
+                res.end(JSON.stringify({ status: "success", data: response.quotes }));
+            })
+            .catch(error => {
+                res.end(JSON.stringify({ status: "failed", error: error }));
             });
-            res.end(JSON.stringify({ status: "success", data:  response.quotes  }));
-        })
-        .catch(error => {
-            res.end(JSON.stringify({ status: "failed", error: error }));
-        });                
     });
 });
 
