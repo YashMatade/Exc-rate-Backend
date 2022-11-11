@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-    res.send("Hello mongodb");
+    res.end("Welcome to Currency Exchange Web App");
 });
 
 app.get("/sync", (req, res) => {
