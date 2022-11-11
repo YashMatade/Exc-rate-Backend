@@ -60,7 +60,7 @@ app.get("/sync", (req, res) => {
 });
 
 app.use("/user", require("./routes/user"));
-
-app.listen(3000, () => {
+let port = process.env.PORT || 3000;
+app.listen(port, () => {
     console.log("Server is running at http://localhost:8081");
 });
