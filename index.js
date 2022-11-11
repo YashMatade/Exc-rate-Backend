@@ -61,6 +61,6 @@ app.get("/sync", (req, res) => {
 
 app.use("/user", require("./routes/user"));
 
-app.listen(3001, () => {
+app.listen(3000, () => {
     console.log("Server is running at http://localhost:8081");
 });
